@@ -6,7 +6,7 @@ import org.netbeans.junit.NbModuleSuite;
 import org.netbeans.junit.NbTestCase;
 
 public class ApplicationTest extends NbTestCase {
-1dddd
+1ddddddd
     public static Test suite() {
         return NbModuleSuite.createConfiguration(ApplicationTest.class).
                 gui(false).
