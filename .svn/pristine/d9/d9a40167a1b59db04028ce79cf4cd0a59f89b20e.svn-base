@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.guanglumedia.cms.order.dao.VodOrderDao" >
+	<resultMap id="BaseResultMap" type="com.guanglumedia.cms.order.entity.EpgVodOrder" >
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="userid" property="userid" jdbcType="VARCHAR" />
+		<result column="movietype" property="movietype" jdbcType="VARCHAR" />
+		<result column="movieid" property="movieid" jdbcType="VARCHAR" />
+		<result column="moviename" property="moviename" jdbcType="VARCHAR" />
+		<result column="price" property="price" jdbcType="VARCHAR" />
+		<result column="paymenttype" property="paymenttype" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="createtime" property="createtime" jdbcType="VARCHAR" />
+		<result column="paytime" property="paytime" jdbcType="VARCHAR" />
+		<result column="evcnid" property="evcnid" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="findVodOrderList" parameterType="com.guanglumedia.cms.order.entity.EpgVodOrder" resultMap="BaseResultMap">
+		select * from epg_vod_order where 1=1 
+		<if test="id != null and id != ''">
+			and id=#{id}
+		</if>
+		<if test="userid != null and userid != ''">
+			and userid=#{userid}
+		</if>
+		<if test="movietype != null and movietype != ''">
+			and movietype=#{movietype}
+		</if>
+		<if test="moviename != null and moviename != ''">
+			and moviename like CONCAT('%',#{moviename},'%')
+		</if>
+		<if test="paymenttype != null and paymenttype != ''">
+			and paymenttype=#{paymenttype}
+		</if>
+		<if test="status != null and status != ''">
+			and status=#{status}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and paytime <![CDATA[>=]]> #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and paytime <![CDATA[<=]]> #{endTime}
+		</if>
+		order by createtime desc
+	</select>
+	
+	<select id="findVodOrderListCount" parameterType="com.guanglumedia.cms.order.entity.EpgVodOrder" resultType="int">
+		select count(*) from epg_vod_order where 1=1 
+		<if test="id != null and id != ''">
+			and id=#{id}
+		</if>
+		<if test="userid != null and userid != ''">
+			and userid=#{userid}
+		</if>
+		<if test="movietype != null and movietype != ''">
+			and movietype=#{movietype}
+		</if>
+		<if test="moviename != null and moviename != ''">
+			and moviename like CONCAT('%',#{moviename},'%')
+		</if>
+		<if test="paymenttype != null and paymenttype != ''">
+			and paymenttype=#{paymenttype}
+		</if>
+		<if test="status != null and status != ''">
+			and status=#{status}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and paytime <![CDATA[>=]]> #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and paytime <![CDATA[<=]]> #{endTime}
+		</if>
+	</select>
+	<insert id="addVodOrder" parameterType="com.guanglumedia.cms.order.entity.EpgVodOrder">
+		insert into epg_vod_order(id,userid,movietype,movieid,moviename,price,status,createtime,paytime,evcnid,paymenttype) values(#{id},#{userid},#{movietype},#{movieid},#{moviename},#{price},#{status},now(),now(),#{evcnid},#{paymenttype})
+	</insert>
+	<update id="updatePayStatus" parameterType="com.guanglumedia.cms.order.entity.EpgVodOrder">
+		update epg_vod_order set status='1',paytime=now(),paymenttype=#{paymenttype} where id=#{id}
+	</update>
+	<select id="findVodOrderById" parameterType="string" resultMap="BaseResultMap">
+		select * from epg_vod_order where id=#{orderId}
+	</select>
+	
+	<!-- 查找未同步的订单 -->
+	<select id="findNotSyncOrder" resultType="com.guanglumedia.cms.order.entity.EpgVodOrder">
+		select * from epg_vod_order where status=1 and syncStatus=0
+	</select>
+	
+	<!-- 批量修改状态 -->
+	<update id="batchUpdateSync" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" separator=";">
+			update epg_vod_order 
+			<set>
+				syncStatus=1 
+			</set>
+			where id=#{item.id}
+		</foreach>
+	</update>
+</mapper>

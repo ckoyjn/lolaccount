@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guanglumedia.api.dao.CardRestDao">
+	<insert id="insertEvcnByList" parameterType="java.util.List">
+		insert into epg_evcn(evcnId,epkId,operateStatus,epkDateStart,epkDateEnd) values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.evcnId},#{item.epkId},#{item.operateStatus},#{item.epkDateStart},#{item.epkDateEnd})
+		</foreach>
+	</insert>
+	
+	<update id="updateCardStatus" parameterType="com.guanglumedia.cms.card.entity.Card">
+		update epg_evcn set operateStatus=#{operateStatus},programeId=#{programeId},evcnProgrameNames=#{evcnProgrameNames},userId=#{userId} where evcnId=#{evcnId}
+	</update>
+	
+	<select id="verifycode" parameterType="int" resultType="int">
+		<![CDATA[
+			SELECT COUNT(*) FROM epg_evcn WHERE evcnid=#{evcnid} AND epkDateStart < NOW() AND epkDateEnd > NOW() AND operateStatus <> 3
+		]]>
+	</select>
+</mapper>

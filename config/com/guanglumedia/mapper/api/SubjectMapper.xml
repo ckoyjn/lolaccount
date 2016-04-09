@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guanglumedia.api.dao.SubjectDao">
+	<resultMap type="com.guanglumedia.api.entity.CmsSpecial" id="CmsSpecial">
+		<id property="id" column="id"/>
+		<result  property="name" column="name"/>
+		<result  property="identify" column="identify"/>
+		<result  property="movieIDs" column="movieIDs"/>
+		<result  property="movieNames" column="movieNames"/>
+		<result  property="status" column="status"/>
+		<result  property="price" column="price"/>
+	</resultMap>
+
+	<select id="getSubjectById" parameterType="net.sf.json.JSONObject" resultMap="CmsSpecial">
+		select s.id,s.identify,s.movieIDs,s.price
+		from cms_special s 
+		where s.`status`=1 and s.id=#{id}
+	</select>
+	
+	<select id="findAllSubject" resultMap="CmsSpecial">
+		select * from cms_special s 
+		where s.`status`=1
+	</select>
+		
+	<select id="auth" parameterType="net.sf.json.JSONObject" resultType="int">
+		select count(1) from epg_auth_subject where userid=#{smartcardid} and sid=#{sid} and expiredate > NOW()
+	</select>
+	
+	
+</mapper>

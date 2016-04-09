@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guanglumedia.cms.setmeal.dao.SetmealDao">
+	<resultMap id="setmealMap" type="com.guanglumedia.cms.setmeal.entity.Setmeal" >
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="price" column="price"/>
+		<result property="discountprice" column="discountprice"/>
+		<result property="description" column="description"/>
+		<result property="formnum" column="formnum"/>
+		<result property="putawaystime" column="putawaystime"/>
+		<result property="putawayetime" column="putawayetime"/>
+		<result property="status" column="status"/>
+		<result property="sort" column="sort"/>
+		<result property="identify" column="identify"/>
+	</resultMap>
+
+	<select id="findSetmealList" parameterType="com.guanglumedia.cms.setmeal.entity.Setmeal" resultMap="setmealMap">
+		select * from cms_setmeal 
+		<where>
+			1=1 
+			<if test="name != null and name != ''">
+				and name like concat('%',#{name},'%') 
+			</if>
+			<if test="status != null and status != 0">
+				and status = #{status} 
+			</if>
+		</where>
+		 order by status,sort
+	</select>
+	
+	<select id="findCount" parameterType="com.guanglumedia.cms.setmeal.entity.Setmeal" resultType="int">
+		select count(*) from cms_setmeal
+		<where>
+			1=1
+			<if test="name != null and name != ''">
+				and name like concat('%',#{name},'%') 
+			</if>
+			<if test="status != null and status != 0">
+				and status = #{status} 
+			</if>
+		</where>
+	</select>
+	
+	<select id="findSetmealById" parameterType="int" resultMap="setmealMap">
+		select * from cms_setmeal where id=#{id}
+	</select>
+	
+	<insert id="addSetmeal" parameterType="com.guanglumedia.cms.setmeal.entity.Setmeal">
+		insert into cms_setmeal(name,price,discountprice,formnum,sort,status,
+		<if test="status == 1">
+		putawaystime
+		</if>
+		<if test="status == 2">
+		putawayetime
+		</if>
+		,description,identify) 
+		values(#{name},#{price},#{discountprice},#{formnum},#{sort},#{status},now(),#{description},#{identify})
+	</insert>
+	
+	<delete id="delSetmeal" parameterType="int">
+		delete from cms_setmeal where id=#{id}
+	</delete>
+	
+	<select id="findRank" parameterType="int" resultType="int">
+		select count(sort) from cms_setmeal 
+		<where>
+			sort=#{sort}
+			<if test="id != 0">
+				and id!=#{id}
+			</if>
+		</where>
+	</select>
+	
+	<update id="updateSetmeal" parameterType="com.guanglumedia.cms.setmeal.entity.Setmeal">
+		update cms_setmeal 
+			<set>
+				<if test="name != null and name != ''">
+					name = #{name},
+				</if>
+				<if test="price != null and price != ''">
+					price = #{price},
+				</if>
+				<if test="formnum != null and formnum != ''">
+					formnum = #{formnum},
+				</if>
+				<if test="discountprice != null and discountprice != ''">
+					discountprice = #{discountprice},
+				</if>
+				<if test="status != null and status != 0">
+					status = #{status},
+				</if>
+				<if test="sort != null and sort != 0">
+					sort = #{sort},
+				</if>
+				<if test="description != null and description != ''">
+					description = #{description},
+				</if>
+				<if test="identify != null and identify != ''">
+					identify = #{identify},
+				</if>
+				<if test="status == 1">
+					putawaystime = now(),
+				</if>
+				<if test="status == 2">
+					putawayetime = now(),
+				</if>
+			</set>
+		where id=#{id}
+	</update>
+</mapper>	

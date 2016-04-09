@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guanglumedia.cms.setmeal.dao.VipDao">
+	<resultMap id="vipMap" type="com.guanglumedia.cms.setmeal.entity.Vip" >
+		<result property="id" column="id"/>
+		<result property="userid" column="userid"/>
+		<result property="validstime" column="validstime"/>
+		<result property="validetime" column="validetime"/>
+		<result property="sendStatus" column="sendStatus"/>
+	</resultMap>
+	
+	<select id="findVipList" parameterType="com.guanglumedia.cms.setmeal.entity.Vip" resultMap="vipMap">
+		select * from cms_vip 
+		<where>
+			1=1
+			<if test="userid != null and userid !=''">
+				and userid like concat('%',#{userid},'%') 
+			</if>
+			<if test="sendStatus != null and sendStatus != 0">
+				and sendStatus = #{sendStatus} 
+			</if>
+		</where>
+	</select>
+	
+	<select id="findCount" parameterType="com.guanglumedia.cms.setmeal.entity.Vip" resultType="int">
+		select count(*) from cms_vip 
+		<where>
+			1=1
+			<if test="userid != null and userid !=''">
+				and userid like concat('%',#{userid},'%') 
+			</if>
+			<if test="sendStatus != null and sendStatus != 0">
+				and sendStatus = #{sendStatus} 
+			</if>
+		</where>
+	</select>
+	
+</mapper>	

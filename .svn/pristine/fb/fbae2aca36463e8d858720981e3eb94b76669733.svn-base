@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guanglumedia.api.dao.UserRestDao">
+	<insert id="addScore" parameterType="net.sf.json.JSONObject">
+		insert into score (movieid,smartcardid,score) values (#{pid},#{smartcardid},#{score})
+	</insert>
+	
+	<select id="selectUserOrder" parameterType="net.sf.json.JSONObject" resultType="map">
+				<![CDATA[
+				SELECT
+				    m.Identify identify,
+				    m.id id,
+				    m.`Name` name,
+				    CASE
+				WHEN DATE_ADD(MAX(recordtime), INTERVAL 48 HOUR) < NOW() THEN
+				    '已过期'
+				WHEN DATE_ADD(MAX(recordtime), INTERVAL 48 HOUR) > NOW() THEN
+				    CONCAT(
+				        '有效期至',
+				        DATE_ADD(MAX(recordtime), INTERVAL 48 HOUR)
+				    )
+				END AS endtime,
+				 MAX(recordtime)
+				FROM
+				    trxnlog t
+				RIGHT JOIN movie m ON t.MediaID = m.MediaID
+				WHERE
+				    userId = #{smartcardid}
+				GROUP BY
+				    Identify
+				ORDER BY
+				    MAX(recordtime) DESC;
+				    ]]>
+	</select>
+	
+	
+	<select id="findUserOrderCount" parameterType="net.sf.json.JSONObject" resultType="int">
+		SELECT
+			count(
+				DISTINCT m.Identify,
+				m.id,
+				m.`Name`
+			)
+		FROM
+			trxnlog t
+		RIGHT JOIN movie m ON t.MediaID = m.MediaID
+		WHERE
+			userId =#{smartcardid}
+	</select>
+</mapper>
